@@ -17,13 +17,16 @@ player_rect.y = SCREEN_HEIGHT - 200
 # Vòng lặp game
 running = True
 while running:
+    # Background
     screen.fill((255,255,255))
+    
     # Xây dựng event thoát game
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+            
     # Xử lý blit các surface
-    screen.blit(player_img, player_rect)
+    screen.blit(player_img, player_rect) #1. truyền tuple tọa độ, 2. truyền vào react
     
     # Cập nhật game
     pygame.display.flip()
