@@ -21,12 +21,17 @@ while running:
     screen.fill((255,255,255))
     
     # Xây dựng event thoát game
-    for event in pygame.event.get():
+    for event in pygame.event.get(): #vòng lặp từng phím
         if event.type == pygame.QUIT:
             running = False
+        elif event.type == pygame.MOUSEMOTION: #MOUSEMOTION là rê chuột
+            #Lấy ra tọa độ chuột
+            x,y = pygame.mouse.get_pos()
+            player_rect.x = x - player_rect.width / 2
+            player_rect.y = y - player_rect.height / 2
             
     # Xử lý blit các surface
-    screen.blit(player_img, player_rect) #1. truyền tuple tọa độ, 2. truyền vào react
+    screen.blit(player_img, player_rect) #1. truyền tuple tọa độ, 2. truyền vào rect
     
     # Cập nhật game
     pygame.display.flip()
