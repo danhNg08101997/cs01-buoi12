@@ -1,4 +1,4 @@
-import pygame, method, sys
+import pygame, sys, random
 from method import create_surface_text
 
 pygame.init()
@@ -22,6 +22,22 @@ f_game = pygame.font.Font('./galaxy war/graphics/subatomic.ttf', 32)
 bg_game = pygame.image.load('./galaxy war/graphics/background_space.jpg')
 bg_game = pygame.transform.scale(bg_game, (SCREEN_WIDTH,SCREEN_HEIGHT))
 
+# Tạo 1 collection chứa đạn
+lst_bullet = []
+    # tốc độ của đạn
+speed_bullet = 2
+
+# Tạo ra 1 list chứa nhiều thiên thạch
+meteor_image = pygame.image.load('./galaxy war/graphics/meteor.png')
+    # collection chứa thiên thạch
+lst_meteor = []
+    # tốc độ rơi của thiên thạch
+speed_meteor = 1
+    # thời gian tạo thiên thạch
+time_meteor_start = 0
+    # thời gian rơi
+time_span_meteor = 1000
+
 # Vòng lặp game
 running = True
 while running:
@@ -37,7 +53,30 @@ while running:
             x,y = pygame.mouse.get_pos()
             player_rect.x = x - player_rect.width / 2
             player_rect.y = y - player_rect.height / 2
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            # Tạo ra 1 viện đạn đưa vào list đạn
+            bullet_image = pygame.image.load('./galaxy war/graphics/laser.png')
+            bullet_rect = bullet_image.get_rect()
+            # lấy tọa độ đạn tại vị trí đầu của mũi máy bay
+            # bullet_rect = player_rect.midtop #(player.rect.x + player_rect.width/2, player_rect.y)
+            bullet_rect.x = player_rect.x + player_rect.width/2
+            bullet_rect.y = player_rect.y
+            # lưu đạn vào lst_bullet
+            lst_bullet.append(bullet_rect)
+            print('lst_bullet: ',lst_bullet)
             
+    # Xử lý thiên thạch
+    current_time_meteor = pygame.time.get_ticks() #lấy thời gian game hiện tại
+    if current_time_meteor - time_meteor_start >= time_span_meteor: # 1s rơi 1 lần
+        # Tạo ra 1 thiên thạch rect đưa vào list
+        meteor_rect = meteor_image.get_rect()
+        meteor_rect.x = random.randint(0, SCREEN_WIDTH - meteor_rect.width)
+        meteor_rect.y = 0
+        lst_meteor.append(meteor_rect)
+        print('lst_meteor: ', lst_meteor)
+        # Gán lại thời gian start
+        time_meteor_start = current_time_meteor
+        
     # Xử lý blit các surface
     screen.blit(player_img, player_rect) #1. truyền tuple tọa độ, 2. truyền vào rect
     
@@ -57,6 +96,25 @@ while running:
     screen.blit(live_text, live_rect)
     screen.blit(score_text, score_rect)
     screen.blit(level_text,level_rect)
+    
+    # xử lý đạn
+    for bullet_rect in lst_bullet:
+        screen.blit(bullet_image,bullet_rect)
+        # sau khi blit từng viên đạn thì giảm y của từng viên đạn
+        bullet_rect.y -= speed_bullet
+        # tối ưu
+        if bullet_rect.y < 0:
+            lst_bullet.remove(bullet_rect)
+        
+    # Xử lý thiên thạch rơi
+    for meteor_rect in lst_meteor:
+        screen.blit(meteor_image, meteor_rect)
+        # thay đổi vị trí thiên thạch
+        meteor_rect.y += speed_meteor / 2
+        meteor_rect.x += random.randint(0, 10) * 0.1
+        # tối ưu thiên thạch
+        if meteor_rect.x < 0 or meteor_rect.x > SCREEN_WIDTH or meteor_rect.y > SCREEN_HEIGHT:
+            lst_meteor.remove(meteor_rect)
     # Cập nhật game
     pygame.display.flip()
 
